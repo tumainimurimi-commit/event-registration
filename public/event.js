@@ -16,6 +16,7 @@ const regNoError=document.querySelector('#regNoError');
 const courseNameError=document.querySelector('#courseNameError');
 const emailError=document.querySelector('#emailError');
 const phoneNumError=document.querySelector('#phoneNumError');
+const termsError=document.querySelector('#termsError');
 
 //Validate the student Full name
 function validateFullName(name){
@@ -28,9 +29,9 @@ function validateFullName(name){
         return 'Full Name must be atleast 3 characters.'
     }
     
-    const words=studentName.split(/\s/);
+    const words=studentName.split(/\s+/);
     for(const word of words){
-        if(!/^[A-Za-z]+$/.test(words)){
+        if(!/^[A-Za-z]+$/.test(word)){
             return 'Name should contain only letters and space';
         }
     }
@@ -40,7 +41,7 @@ function validateFullName(name){
 function showFullNameError(message){
     fullnameError.textContent=message;
     fullName.classList.toggle('Invalid', message!=='');
-    fullName.setAttribute('aria-invalid', message?'true' : 'false')
+    fullName.setAttribute('aria-invalid', message?'true' : 'false');
 }
 
 //Validate the student registration number
@@ -50,13 +51,14 @@ function validateregistrationNumber(regNo){
         return 'Registration Number is required';
     }
     
-    if(regNo.length<4){
+    if(studentRegNo.length<4){
         return 'Registration Number must be atleast 4 characters';
     }
-    const REG_NUMBER_REGEX=/^[A-Z]{2}\d{3}\/[A-Z0-9]+\/\d{5\/\d{2}$/;
+    const REG_NUMBER_REGEX=/^[A-Z]{2}\d{3}\/[A-Z0-9]+\/\d{5}\/\d{2}$/;
     if(!REG_NUMBER_REGEX.test(studentRegNo)){
         return 'Format must be like CT100/G/26252/25'
     }
+    return '';//no error
 }
 //function showing error for the registration number
 function showRegistrationError(message){
@@ -75,9 +77,9 @@ function validateCourseName(name){
         return 'Course Name must be atleast 3 characters.'
     }
     
-    const words=studentName.split(/\s/);
+    const words=studentName.split(/\s+/);
     for(const word of words){
-        if(!/^[A-Za-z]+$/.test(words)){
+        if(!/^[A-Za-z]+$/.test(word)){
             return 'Name should only contain letters and space';
         }
     }
@@ -88,7 +90,6 @@ function showCourseError(message){
     courseNameError.textContent=message;
     courseName.classList.toggle('Invalid', message!=='');
     courseName.setAttribute('aria-invalid', message?'true' : 'false');
-
 }
 //Validate the email
 function validateEmail(email){
@@ -100,15 +101,95 @@ function validateEmail(email){
     if(!EMAIL_REGEX.test(studentEmail)){
         return 'Enter a valid email, e.g. name@example.com';
     }
+    return '';//no error
 }
 //fuction show error for the email
+function showEmailError(message){
+    emailError.textContent=message;
+    email.classList.toggle('Invalid', message!=='');
+    email.setAttribute('aria-invalid', message?'true' : 'false');
+}
+//Validate phone number
+function validatePhoneNumber(phoneNum){
+    const PHONE_REGEX = /^(?:\+254|254|0)[71]\d{8}$/;
+    const phone=phoneNum.trim();
+    if(phone===''){
+        return 'Please enter your phone number'
+    }
+     if (!/^\+?\d+$/.test(phone)){
+        return 'Phone number can only contain digits and an optional leading +.'
+    }
+    if(PHONE_REGEX.test(phone)){
+        return '';
+    }
+    if (!/^(?:\+254|254|0)/.test(phone)){
+        return 'Kenyan numbers must start with 07, 01, +254, or 254.';
+    }
+    const expected=phone.startsWith('+254') ? 13
+                    :phone.startsWith('254') ? 12
+                    :10;
+    if (phone.length < expected) {
+    return `That number is too short — a Kenyan number is ${expected} characters.`;
+    }
+    if (phone.length > expected) {
+    return `That number is too long — a Kenyan number is ${expected} characters.`;
+    }
 
+    return 'Enter a valid Kenyan number, e.g. 0712345678 or +254712345678.';
+}
+//Fuction that show phone number error
+function showPhoneNumberError(message){
+    phoneNumError.textContent=message;
+    phoneNumber.classList.toggle('Invalid', message!=='');
+    phoneNumber.setAttribute('aria-invalid', message?'true' : 'false');
+}
+//The policy consent checkbox
+function validateCheckbox(checked){
+    if(!checked){
+        return 'Please accept the terms and conditions to continue.';
+    }
+    return '';
+}
+//Function that shows terms error
+function showTermsError(message){
+  termsError.textContent = message;
+  agreementPolicy.setAttribute('aria-invalid', message ? 'true' : 'false');
+}
 //eventlistener for the full name input
 fullName.addEventListener('input',()=>{
     const inputMessage=validateFullName(fullName.value);
     showFullNameError(inputMessage);
 
 })
+//submit function and create a user input
+async function submitFormHandler(){
+    const studentInfo={
+        fullName:fullName.value.trim(),
+        regNo:registrationNumber.value.trim(),
+        course:courseName.value.trim(),
+        studyYear:yearOfStudy.value,
+        emailInfo:email.value.trim(),
+        phone:phoneNumber.value.trim(),
+        DOB:dateOfBirth.value,
+        genderInfo:gender.value,
+        dietaryInfo:dietary.value.trim(),
+        agreedToPolicy: agreementPolicy.checked
+    }
+    try{
+        const response=await fetch('/api/register',{
+            method: 'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(studentInfo)
+        });
+        if(!response.ok){
+            throw new Error(`Server response ${response.status}`)
+        }
+        message.textContent='Registration successful.';
+        registrationForm.reset();
+    }catch (error){
+        message.textContent=`Submit failed: ${error.message}`;
+    }
+}
 //eventlistener for the registration number input 
 registrationNumber.addEventListener('input',()=>{
     const inputMessage=validateregistrationNumber(registrationNumber.value);
@@ -118,4 +199,23 @@ registrationNumber.addEventListener('input',()=>{
 courseName.addEventListener('input',()=>{
     const inputMessage=validateCourseName(courseName.value);
     showCourseError(inputMessage);
+})
+//eventlistener for the the email input
+email.addEventListener('input', ()=>{
+    const inputMessage=validateEmail(email.value);
+    showEmailError(inputMessage);
+})
+//eventlistener for phone number
+phoneNumber.addEventListener('input',()=>{
+    const inputMessage=validatePhoneNumber(phoneNumber.value);
+    showPhoneNumberError(inputMessage);
+})
+//eventlistener for agreement policy
+agreementPolicy.addEventListener('change', ()=>{
+    showTermsError(validateCheckbox(agreementPolicy.checked))
+})
+//Form submit listener
+registrationForm.addEventListener('submit', async (event)=>{
+    event.preventDefault();
+    submitFormHandler();
 })
