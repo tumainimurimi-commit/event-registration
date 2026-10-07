@@ -9,6 +9,7 @@
 </head>
 <body>
 
+    <!--The header of the webpage and it title-->
     <header>
         <div class="main-heading">
             <h1>Student Leadership &amp; Innovation Summit</h1>
@@ -17,30 +18,33 @@
         <span class="limit-required">Limited to 50 seats</span>
     </header>
 
+    <!--The main body of student registration form-->
     <main>
         <div class="form-heading">
             <h2>Student Registration Form</h2>
             <p>Fill in this form to reserve your seat for the Student Leadership and Innovation Summit.</p>
         </div>
-
+        <!--The form body that receives user details-->
         <form action="/api/registrations" method="POST" id="registrationForm">
-
+        <!--Full name label and input-->
             <div class="form-row">
                 <div class="form-field">
                     <label for="fullName">Full Name</label>
                     <input type="text" name="fullName" id="fullName" placeholder="Enter your full name" required>
                 </div>
+        <!--Registration Number label and input-->
                 <div class="form-field">
                     <label for="registrationNumber">Registration Number</label>
                     <input type="text" name="registrationNumber" id="registrationNumber" placeholder="Enter your registration number" required>
                 </div>
             </div>
-
+        <!--Course label and input-->
             <div class="form-row">
                 <div class="form-field">
                     <label for="courseName">Course</label>
                     <input type="text" name="courseName" id="courseName" placeholder="Enter your course" required>
                 </div>
+        <!--Year of study select label and input-->
                 <div class="form-field">
                     <label for="yearOfStudy">Year of Study</label>
                     <select name="yearOfStudy" id="yearOfStudy" required>
@@ -52,12 +56,14 @@
                     </select>
                 </div>
             </div>
-
+        
             <div class="form-row">
+        <!--Email label and input-->
                 <div class="form-field">
                     <label for="email">Email</label>
                     <input type="email" name="email" id="email" placeholder="Enter your email address" required>
                 </div>
+        <!--phone number label and input-->
                 <div class="form-field">
                     <label for="phoneNumber">Phone Number</label>
                     <input type="tel" name="phoneNumber" id="phoneNumber" placeholder="Enter your phone number" required>
@@ -65,10 +71,12 @@
             </div>
 
             <div class="form-row">
+        <!--Date of birth label and date input-->
                 <div class="form-field">
                     <label for="dateOfBirth">Date of Birth</label>
                     <input type="date" name="dateOfBirth" id="dateOfBirth" min="1940-01-01" required>
                 </div>
+        <!--Gender label and select input -->
                 <div class="form-field">
                     <label for="gender">Gender</label>
                     <select name="gender" id="gender">
@@ -81,19 +89,20 @@
             </div>
 
             <div class="form-row">
+        <!--The dietry requirement label and textarea-->
                 <div class="form-field">
                     <label for="dietary">Dietary Requirements</label>
                     <input type="text" name="dietary" id="dietary" placeholder="E.g. vegetarian, no pork, allergies">
                 </div>
             </div>
-
+        <!--The consent requirement checkbox agreement policy-->
             <div class="form-row">
-                <div class="form-field checkbox-field">
+                <div class="consent">
                     <input type="checkbox" name="agreementPolicy" id="agreementPolicy" value="yes" required>
                     <label for="agreementPolicy">I agree that my personal data will be used only for the purpose of this event.</label>
                 </div>
             </div>
-
+        <!--The register submit button -->
             <div class="form-row">
                 <button type="submit">Register</button>
             </div>
@@ -102,7 +111,7 @@
 
         </form>
     </main>
-
+        <!--The footer of the webpage-->
     <footer>
         <p>Kirinyaga University · 2026</p>
     </footer>
