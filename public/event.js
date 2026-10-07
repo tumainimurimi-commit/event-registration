@@ -155,17 +155,11 @@ function showTermsError(message){
   termsError.textContent = message;
   agreementPolicy.setAttribute('aria-invalid', message ? 'true' : 'false');
 }
-//eventlistener for the full name input
-fullName.addEventListener('input',()=>{
-    const inputMessage=validateFullName(fullName.value);
-    showFullNameError(inputMessage);
-
-})
 //submit function and create a user input
 async function submitFormHandler(){
     const studentInfo={
         fullName:fullName.value.trim(),
-        regNo:registrationNumber.value.trim(),
+        regNo:registrationNumber.value.trim().toUpperCase(),
         course:courseName.value.trim(),
         studyYear:yearOfStudy.value,
         emailInfo:email.value.trim(),
@@ -190,8 +184,17 @@ async function submitFormHandler(){
         message.textContent=`Submit failed: ${error.message}`;
     }
 }
+//eventlistener for the full name input
+    fullName.addEventListener('input',()=>{
+    const inputMessage=validateFullName(fullName.value);
+    showFullNameError(inputMessage);
+
+})
 //eventlistener for the registration number input 
 registrationNumber.addEventListener('input',()=>{
+    const cursorPos = registrationNumber.selectionStart;
+    registrationNumber.value = registrationNumber.value.toUpperCase();
+    registrationNumber.setSelectionRange(cursorPos, cursorPos);
     const inputMessage=validateregistrationNumber(registrationNumber.value);
     showRegistrationError(inputMessage);
 })
