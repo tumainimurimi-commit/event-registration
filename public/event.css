@@ -88,6 +88,17 @@ main {
     max-width: 600px;
     margin: 0 auto;
 }
+/*The Error displayer on every input*/
+.error{
+    display: block;
+    color: #c0392b;
+    font-size: 0.8rem;
+    
+}
+input.invalid{
+    border-color: #c0392b;
+    outline-color: #c0392b;
+}
 
 /*The student form layout*/
 form {
