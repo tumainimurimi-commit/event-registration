@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="event.css">
+    <script src="event.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <div class="main-heading">
+            <h1>Student Leadership &amp; Innovation Summit</h1>
+            <p>September 20, 2026 · Kirinyaga University Lecture Theatre</p>
+        </div>
+        <span class="limit-required">Limited to 50 seats</span>
+    </header>
+
+    <main>
+        <div class="form-heading">
+            <h2>Student Registration Form</h2>
+            <p>Fill in this form to reserve your seat for the Student Leadership and Innovation Summit.</p>
+        </div>
+
+        <form action="/api/registrations" method="POST" id="registrationForm">
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" name="fullName" id="fullName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-field">
+                    <label for="registrationNumber">Registration Number</label>
+                    <input type="text" name="registrationNumber" id="registrationNumber" placeholder="Enter your registration number" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="courseName">Course</label>
+                    <input type="text" name="courseName" id="courseName" placeholder="Enter your course" required>
+                </div>
+                <div class="form-field">
+                    <label for="yearOfStudy">Year of Study</label>
+                    <select name="yearOfStudy" id="yearOfStudy" required>
+                        <option value="">Select year</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+                </div>
+                <div class="form-field">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" name="phoneNumber" id="phoneNumber" placeholder="Enter your phone number" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="dateOfBirth">Date of Birth</label>
+                    <input type="date" name="dateOfBirth" id="dateOfBirth" min="1940-01-01" required>
+                </div>
+                <div class="form-field">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender">
+                        <option value="">Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="dietary">Dietary Requirements</label>
+                    <input type="text" name="dietary" id="dietary" placeholder="E.g. vegetarian, no pork, allergies">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field checkbox-field">
+                    <input type="checkbox" name="agreementPolicy" id="agreementPolicy" value="yes" required>
+                    <label for="agreementPolicy">I agree that my personal data will be used only for the purpose of this event.</label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <button type="submit">Register</button>
+            </div>
+
+            <div id="message"></div>
+
+        </form>
+    </main>
+
+    <footer>
+        <p>Kirinyaga University · 2026</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "event-registration",
+  "version": "1.0.0",
+  "description": "Student registration system for university system",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "author": "Tumaini Murimi",
+  "license": "ISC",
+  "type": "commonjs"
+}
