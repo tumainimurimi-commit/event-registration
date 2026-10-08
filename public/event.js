@@ -150,17 +150,17 @@ function validateCheckbox(checked){
     }
     return '';
 }
-//Function that shows terms error
+//Function that shows policy terms error
 function showTermsError(message){
   termsError.textContent = message;
   agreementPolicy.setAttribute('aria-invalid', message ? 'true' : 'false');
 }
-//submit function and create a user input
+//submit function and create a user input object and send it to the server
 async function submitFormHandler(){
     const studentInfo={
-        fullName:fullName.value.trim(),
+        fullName:fullName.value.trim().toUpperCase(),
         regNo:registrationNumber.value.trim().toUpperCase(),
-        course:courseName.value.trim(),
+        course:courseName.value.trim().toUpperCase(),
         studyYear:yearOfStudy.value,
         emailInfo:email.value.trim(),
         phone:phoneNumber.value.trim(),
@@ -179,6 +179,7 @@ async function submitFormHandler(){
             throw new Error(`Server response ${response.status}`)
         }
         message.textContent='Registration successful.';
+        alert('The form was succefully submited');
         registrationForm.reset();
     }catch (error){
         message.textContent=`Submit failed: ${error.message}`;
