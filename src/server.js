@@ -1,7 +1,7 @@
 const http = require('node:http');
 const { entryPointHandler } = require('./routes');
 
-const PORT = 3001;
+const PORT = 3000;
 
 const server = http.createServer((req, res) => {
     const date = new Date().toISOString();
