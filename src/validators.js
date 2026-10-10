@@ -44,7 +44,7 @@ function validateRegistration(data){
     //email validation
     const emailInfo=(data.emailInfo || '').trim().toLowerCase();
     const info=/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/
-    if(email===''){
+    if(emailInfo===''){
         errors.emailInfo='Email is required';
     }else if(!info.test(emailInfo)){
         errors.emailInfo='Email format is invalid'
@@ -75,9 +75,9 @@ function validateRegistration(data){
 
     //Validate gender 
     const genderInfo=(data.genderInfo || '').trim();
-     if(genderInfo===''){
+    if(genderInfo===''){
         errors.genderInfo='Gender info is required'
-    }else if(!['Male', 'Female', 'Prefer not to say'].includes(gender)){
+    }else if(!['Male', 'Female', 'Prefer not to say'].includes(genderInfo)){
         errors.genderInfo='Gender selection is invalid';
     }
     //validate dietry requirement
@@ -102,7 +102,7 @@ function validateRegistration(data){
         DOB,
         genderInfo,
         dietaryInfo,
-        agreementPolicy
+        agreedToPolicy:data.agreedToPolicy
     };
 
     //source of true in the validator 
