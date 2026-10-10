@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration Admin</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="admin.js" defer></script>
+</head>
+<body>
+    <!--The heading of the webpage-->
+    <header>
+        <div class="main-heading">
+            <h1>Event Registration Admin</h1>
+            <p>Kirinyaga University Tech & Innovation Expo 2026 </p>
+        </div>
+        <p class="registeredIndicator"><span id="registered">50&nbsp;</span>Registered</p>
+    </header>
+    <!--The summary card for the register student-->
+    <main>
+        <section class="summary-card">
+            <!--Total registered student-->
+            <div class="display-card">
+                <h3>TOTAL REGISTERED</h3>
+                <span id="totalRegistered"></span>
+                <p>Students registered for the event</p>
+            </div>
+            <!--The total who checked in and attended-->
+            <div class="display-card">
+                <h3>ATTENDED</h3>
+                <span id="totalAttended"></span>
+                <p>Checked in and confirmed</p>
+            </div>
+            <!--The pending student not yet verified-->
+            <div class="display-card">
+                <h3>PENDING</h3>
+                <span id="totalPending"></span>
+                <p>Not yet checked in</p>
+            </div>
+            <!--The total grouped by course card-->
+            <div class="display-card">
+                <h3>BY COURSE</h3>
+                <span id="totalCourse">3</span>
+                <p>Courses Represented</p>
+            </div>
+        </section>
+
+        <!--The search bar and the filter option-->
+        <section class="search-area">
+            <!--Search bar-->
+            <form class="search-form" role="search" id="submitForm">
+                 <label for="seachStudent" class="visually-hidden">Search assignments</label>
+                <input type="text" name="search" id="seachStudent" placeholder="search by name, registration number, or email">
+            </form>
+            <!--Selecting course-->
+            <div class="filter">
+                <select name="course" id="filterByGender">
+                    <option value="">Filter by Gender</option>
+                    <option value="All">Remove Filter</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <!--Selecting year-->
+            <div class="filter">
+                <select name="year" id="filterByYear">
+                    <option value="">Filter by Year</option>
+                    <option value="All">Remove Filter</option>
+                    <option value="1">Year 1</option>
+                    <option value="2">Year 2</option>
+                    <option value="3">Year 3</option>
+                    <option value="4">Year 4</option>
+                </select>
+            </div>
+            <!--The export CSV-->
+            <div>
+                <button type="button" id="exportCSV">Export CSV</button>
+            </div>
+        </section>
+        <!--The student list of the register student-->
+        <section class="registered-student">
+            <ul id="studentList">
+                <!--Dynamically adding the users using javascript-->
+            </ul>
+        </section>
+        <section>
+            <div id="editModal" class="modal-overlay" hidden>
+                <div class="modal-card">
+                    <h2>Edit student Info</h2>
+                    <form action="" id="editForm">
+                        <label for="editFullName">
+                            Full Name
+                            <input type="text" name="editFullName" id="editFullName">
+                        </label>
+                        <label for="editRegNo">Registration Number
+                            <input type="text" name="editRegNo" id="editRegNo">
+                        </label>
+                        <label for="editCourse">Course
+                            <input type="text" name="editCourse" id="editCourse">
+                        </label>
+                        <label for="editStudyYear">
+                            Year of Study
+                            <input type="text" name="editStudyYear" id="editStudyYear">
+                        </label>
+                        <label for="editEmailInfo">
+                            Email
+                            <input type="text" name="editEmailInfo" id="editEmailInfo">
+                        </label>
+                        <label for="editPhone">
+                            Phone
+                            <input type="text" name="editPhone" id="editPhone">
+                        </label>
+                        <label for="editDOB">Date of Birth
+                            <input type="text" name="editDOB" id="editDOB">
+                        </label>
+                        <label for="editGenderInfo">
+                            Gender
+                            <input type="text" name="editGenderInfo" id="editGenderInfo">
+                        </label>
+                        <label for="editDietaryInfo">
+                            Dietary Requirements
+                            <input type="text" name="editDietaryInfo" id="editDietaryInfo">
+                        </label>
+                        <div class="modal-action">
+                            <button type="button" id="cancelEdit">Cancel</button>
+                            <button type="submit" id="saveEdit">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+       <!--The footer of the webpage-->
+    <footer>
+        <p>Kirinyaga University · 2026</p>
+    </footer>
+</body>
+</html>
