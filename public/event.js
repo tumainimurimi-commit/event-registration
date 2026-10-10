@@ -17,6 +17,7 @@ const courseNameError=document.querySelector('#courseNameError');
 const emailError=document.querySelector('#emailError');
 const phoneNumError=document.querySelector('#phoneNumError');
 const termsError=document.querySelector('#termsError');
+const submitButton=registrationForm.querySelector('button[type="submit"]');
 
 //Validate the student Full name
 function validateFullName(name){
@@ -155,8 +156,37 @@ function showTermsError(message){
   termsError.textContent = message;
   agreementPolicy.setAttribute('aria-invalid', message ? 'true' : 'false');
 }
+
+//Function that maps a server error key to the correct show function
+function showServerError(field, msg){
+    switch(field){
+        case 'fullName': showFullNameError(msg); break;
+        case 'regNo': showRegistrationError(msg); break;
+        case 'course': showCourseError(msg); break;
+        case 'emailInfo': showEmailError(msg); break;
+        case 'phone': showPhoneNumberError(msg); break;
+        case 'agreedToPolicy': showTermsError(msg); break;
+        default:
+            message.textContent += msg + ' ';
+            message.className = 'message-error';
+    }
+}
+
+//Function that clears all errors before a new submit
+function clearAllErrors(){
+    showFullNameError('');
+    showRegistrationError('');
+    showCourseError('');
+    showEmailError('');
+    showPhoneNumberError('');
+    showTermsError('');
+    message.textContent = '';
+    message.className = '';
+}
+
 //submit function and create a user input object and send it to the server
 async function submitFormHandler(){
+    clearAllErrors();
     const studentInfo={
         fullName:fullName.value.trim().toUpperCase(),
         regNo:registrationNumber.value.trim().toUpperCase(),
@@ -169,20 +199,42 @@ async function submitFormHandler(){
         dietaryInfo:dietary.value.trim(),
         agreedToPolicy: agreementPolicy.checked
     }
+    
+    submitButton.disabled=true;
+    submitButton.textContent='Registering...';
     try{
-        const response=await fetch('/api/register',{
+        const response=await fetch('http://localhost:3000/api/register',{
             method: 'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify(studentInfo)
         });
+        const data=await response.json();
         if(!response.ok){
-            throw new Error(`Server response ${response.status}`)
+            if(data.errors){
+                Object.keys(data.errors).forEach((key)=>{
+                    showServerError(key, data.errors[key]);
+                });
+                return;
+            }
+            if(data.error){
+                message.textContent=data.error;
+                message.className='message-error';
+                return;
+            }
+            message.textContent=`Submit failed: Server response ${response.status}`;
+            message.className='message-error';
+            return;
         }
         message.textContent='Registration successful.';
+        message.className='message-success';
         alert('The form was succefully submited');
         registrationForm.reset();
     }catch (error){
         message.textContent=`Submit failed: ${error.message}`;
+        message.className='message-error';
+    }finally{
+        submitButton.disabled=false;
+        submitButton.textContent='Register';
     }
 }
 //eventlistener for the full name input
