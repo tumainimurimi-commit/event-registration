@@ -17,7 +17,7 @@ function validateRegistration(data){
     const regNo=(data.regNo || '').trim().toUpperCase();
     const number=/^[A-Z]{2}\d{3}\/[A-Z0-9]+\/\d{5}\/\d{2}$/
     if(regNo===''){
-        errors.regNo='Registration number is required'
+      errors.regNo='Registration number is required'
     }else if(!number.test(regNo)){
         errors.regNo='Registration number must look like this CT100/G/26252/25.'
     }
