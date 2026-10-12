@@ -29,6 +29,10 @@ const saveEdit = document.querySelector('#saveEdit');
 let registeredStudent=[];
 let editingId=null;
 
+//The state that tracks which filters and search are currently applied
+let currentSearch='';
+let currentGender='';
+let currentYear='';
 
 //Fuction checking the response from the server after making the request 
 function checkingServer(response) {
@@ -68,27 +72,35 @@ function updateSummaryCards(student){
     registered.textContent=totalStudent + '\u00A0'
 }
 
-//The function that handle the filter by gender
-function filterGenderHandler(gender){
-    //Select filter by gender select value
-    if(gender==='All'){
-        renderContent(registeredStudent);
-    }else{
-    const studentGender=registeredStudent.filter(student=>student.studentInfo.genderInfo===gender)
-    renderContent(studentGender);
+//The function that combines search, gender filter, and year filter
+function applyFilters(){
+    let result=[...registeredStudent];
+
+    //Filter by search term on name, reg number, and email
+    if(currentSearch){
+        const term=currentSearch.toLowerCase();
+        result=result.filter(student=>{
+            const s=student.studentInfo;
+            return (
+                s.fullName.toLowerCase().includes(term) ||
+                s.regNo.toLowerCase().includes(term) ||
+                s.emailInfo.toLowerCase().includes(term)
+            );
+        });
     }
-}
 
-//The function that handles the filter by year
-function filterYearHandler(year){
-   if(year==='All'){
-    renderContent(registeredStudent)
-   }else{
-        const studentYear=registeredStudent.filter(student=>student.studentInfo.studyYear===year)
-        renderContent(studentYear);
-   }
-}
+    //Filter by gender
+    if(currentGender && currentGender!=='All'){
+        result=result.filter(student=>student.studentInfo.genderInfo===currentGender);
+    }
 
+    //Filter by year
+    if(currentYear && currentYear!=='All'){
+        result=result.filter(student=>student.studentInfo.studyYear===currentYear);
+    }
+
+    renderContent(result);
+}
 
 //Fuction that renders the student on the list once they have registered on student registration form
 function renderContent(info){
@@ -198,6 +210,7 @@ function exportStudentsToCSV() {
 
     URL.revokeObjectURL(url);
 };
+
 //fetch the registerd student from the server
 async function fetchRegisteredStudent(){
    try{
@@ -217,74 +230,152 @@ async function fetchRegisteredStudent(){
    }
    
 }
-    //Adding the user input after the edit click
-    function fillModuleForm(info){ 
-        editFullName.value=info.studentInfo.fullName;
-        editRegNo.value=info.studentInfo.regNo;
-        editCourse.value=info.studentInfo.course;
-        editStudyYear.value=info.studentInfo.studyYear;
-        editEmailInfo.value=info.studentInfo.emailInfo;
-        editPhone.value=info.studentInfo.phone;
-        editDOB.value=info.studentInfo.DOB;
-        editGenderInfo.value=info.studentInfo.genderInfo;
-        editDietaryInfo.value=info.studentInfo.dietaryInfo;
-    }
-    //Retrieving the values from the module after Edit
-    function saveChangeEdit(){
-        const student=registeredStudent.find(info=>info.id===editingId);
-        if(!student)return;
 
-        student.studentInfo.fullName=editFullName.value.trim();
-        student.studentInfo.regNo=editRegNo.value.trim();
-        student.studentInfo.course=editCourse.value.trim();
-        student.studentInfo.studyYear=editStudyYear.value.trim();
-        student.studentInfo.emailInfo=editEmailInfo.value.trim();
-        student.studentInfo.phone=editPhone.value.trim();
-        student.studentInfo.DOB=editDOB.value.trim();
-        student.studentInfo.genderInfo=editGenderInfo.value.trim();
-        student.studentInfo.dietaryInfo=editDietaryInfo.value.trim();
+//Adding the user input after the edit click
+function fillModuleForm(info){ 
+    editFullName.value=info.studentInfo.fullName;
+    editRegNo.value=info.studentInfo.regNo;
+    editCourse.value=info.studentInfo.course;
+    editStudyYear.value=info.studentInfo.studyYear;
+    editEmailInfo.value=info.studentInfo.emailInfo;
+    editPhone.value=info.studentInfo.phone;
+    editDOB.value=info.studentInfo.DOB;
+    editGenderInfo.value=info.studentInfo.genderInfo;
+    editDietaryInfo.value=info.studentInfo.dietaryInfo;
+}
 
-        renderContent(registeredStudent);
+//Retrieving the values from the module after Edit
+async function saveChangeEdit(){
+    const student=registeredStudent.find(info=>info.id===editingId);
+    if(!student)return;
+    
+    const editStudent={
+        fullName:editFullName.value.trim(),
+        regNo:editRegNo.value.trim(),
+        course:editCourse.value.trim(),
+        studyYear:editStudyYear.value.trim(),
+        emailInfo:editEmailInfo.value.trim(),
+        phone:editPhone.value.trim(),
+        DOB:editDOB.value.trim(),
+        genderInfo:editGenderInfo.value.trim(),
+        dietaryInfo:editDietaryInfo.value.trim()
+    };
+    
+    try{
+        const response=await fetch(`http://localhost:3000/api/registrations/${student.id}`,{
+            method:'PUT',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(editStudent)
+        });
+        if(!response.ok){
+            throw new Error(`Server responded: ${response.status}`);
+        }
+        const updated=await response.json();
+
+        student.studentInfo.fullName = updated.studentInfo.fullName;
+        student.studentInfo.regNo = updated.studentInfo.regNo;
+        student.studentInfo.course = updated.studentInfo.course;
+        student.studentInfo.studyYear = updated.studentInfo.studyYear;
+        student.studentInfo.emailInfo = updated.studentInfo.emailInfo;
+        student.studentInfo.phone = updated.studentInfo.phone;
+        student.studentInfo.DOB = updated.studentInfo.DOB;
+        student.studentInfo.genderInfo = updated.studentInfo.genderInfo;
+        student.studentInfo.dietaryInfo = updated.studentInfo.dietaryInfo;
+
+        applyFilters();
         updateSummaryCards(registeredStudent);
 
         editModal.hidden=true;
         editingId=null;
-    }
 
-    //Fuction that handle the delect of student
-    function deleteStudent(id){
-        const index=registeredStudent.findIndex(student=>student.id===id)
+    }catch(error){
+        console.log('Edit failed:', error.message);
+        alert('Could not save changes: ' + error.message);
+    }
+}
+
+//delete the actual register student 
+async function deleteStudent(id){
+    try{
+        const response=await fetch(`http://localhost:3000/api/registrations/${id}`,{
+            method:'DELETE'
+        });
+        if(!response.ok){
+            throw new Error(`Server responded: ${response.status}`);
+        }
+        const index=registeredStudent.findIndex(student=>student.id===id);
         if(index===-1)return;
         registeredStudent.splice(index,1);
-        renderContent(registeredStudent);
+        applyFilters();
         updateSummaryCards(registeredStudent);
+    }catch(error){
+        console.log('Delete failed:', error.message);
+        alert('Could not delete student: ' + error.message);
     }
-    //Event listener that listen to the gender input and update the list on the admin screen
-    filterByGender.addEventListener('input',()=>{
-        const gender=filterByGender.value;
-        filterGenderHandler(gender)
-    })
+}
 
-    //Eventlistener that listen to the year input and update the list on admin screen
-    filterByYear.addEventListener('input',()=>{
-        const year=filterByYear.value;
-        filterYearHandler(year);
-    })
+//The function that handles the toggle of attendance on the server
+async function toggleAttendanceOnServer(id){
+    try{
+        const response=await fetch(`http://localhost:3000/api/registrations/${id}/attendance`,{
+            method:'PATCH'
+        });
+        if(!response.ok){
+            throw new Error(`Server responded: ${response.status}`);
+        }
+        return await response.json();
+    }catch(error){
+        console.log('Mark attendance failed:', error.message);
+        alert('Could not update attendance: ' + error.message);
+        return null;
+    }
+}
 
-    //Event listener that handles the mark attendance button
-    studentList.addEventListener('click', (event) => {
-        const mark = event.target.closest('[data-id]');
-        if (!mark) return;
+//Event listener that listen to the gender input and update the list on the admin screen
+filterByGender.addEventListener('input',()=>{
+    currentGender=filterByGender.value;
+    applyFilters();
+});
 
-        const markBtn = event.target.closest('.mark-attendance');
-        if (!markBtn) return;
+//Eventlistener that listen to the year input and update the list on admin screen
+filterByYear.addEventListener('input',()=>{
+    currentYear=filterByYear.value;
+    applyFilters();
+});
 
-        const id = mark.dataset.id;
-        const markId = registeredStudent.find(student => student.id === id);
-        if (!markId) return;
+//Event listener that listen to the search input and update the list on admin screen
+seachStudent.addEventListener('input',()=>{
+    currentSearch=seachStudent.value.trim();
+    applyFilters();
+});
 
-        markId.attended = !markId.attended;
-        const verifyAttendance = mark.querySelector('.verify-attendance');
+//Prevent the search form from reloading the page when Enter is pressed
+submitForm.addEventListener('submit',(event)=>{
+    event.preventDefault();
+});
+
+//Event listener on the CSV export button
+exportCSV.addEventListener('click',exportStudentsToCSV);
+
+//Event listener that handles the mark attendance button
+studentList.addEventListener('click', async (event) => {
+    const mark = event.target.closest('[data-id]');
+    if (!mark) return;
+
+    const markBtn = event.target.closest('.mark-attendance');
+    if (!markBtn) return;
+
+    const id = mark.dataset.id;
+    const markId = registeredStudent.find(student => student.id === id);
+    if (!markId) return;
+
+    //Ask the server first, then update the local array
+    const updated = await toggleAttendanceOnServer(id);
+    if (!updated) return;
+
+    markId.attended = updated.attended;
+
+    const verifyAttendance = mark.querySelector('.verify-attendance');
 
     if (markId.attended) {
         verifyAttendance.classList.remove('pending');
@@ -298,43 +389,42 @@ async function fetchRegisteredStudent(){
     updateSummaryCards(registeredStudent);
 });
 
-    //Event listener on the CSV export button
-    exportCSV.addEventListener('click',exportStudentsToCSV);
-    //Event listener that handles the edit button on the list
-     studentList.addEventListener('click', (event)=>{
-        const editLi=event.target.closest('[data-id]');
-        if(!editLi)return;
-        const editBtn=event.target.closest('.edit-attendance');
-        if(!editBtn)return;
-        editModal.hidden = false;
+//Event listener that handles the edit button on the list
+studentList.addEventListener('click', (event)=>{
+    const editLi=event.target.closest('[data-id]');
+    if(!editLi)return;
+    const editBtn=event.target.closest('.edit-attendance');
+    if(!editBtn)return;
+    editModal.hidden = false;
 
-        editingId=editLi.dataset.id;
-        const editObject=registeredStudent.find(student=>student.id===editingId)
-        fillModuleForm(editObject)
-     })
+    editingId=editLi.dataset.id;
+    const editObject=registeredStudent.find(student=>student.id===editingId);
+    fillModuleForm(editObject);
+});
 
-     //Event listerner that handle the save change button on the module over display
-     editForm.addEventListener('submit', (event)=>{
-        event.preventDefault()
-       saveChangeEdit()
-     })
+//Event listerner that handle the save change button on the module over display
+editForm.addEventListener('submit', (event)=>{
+    event.preventDefault();
+    saveChangeEdit();
+});
 
-     //Event listener that handle the cancel button on the module edit display
-     cancelEdit.addEventListener('click',()=>{
-        editModal.hidden=true;
-        editingId=null;
-     })
+//Event listener that handle the cancel button on the module edit display
+cancelEdit.addEventListener('click',()=>{
+    editModal.hidden=true;
+    editingId=null;
+});
 
-    //Event Listener that handle the delete button
-    studentList.addEventListener('click',(event)=>{
-        const deletBtn=event.target.closest('.delete-attendance');
-        const card=event.target.closest('[data-id]');
-        if(!card)return;
-        const id=card.dataset.id;
-        if(deletBtn){
-            if(window.confirm('Delete this student? This cannot be undone.')){
-                deleteStudent(id)
-            }
+//Event Listener that handle the delete button
+studentList.addEventListener('click',(event)=>{
+    const deletBtn=event.target.closest('.delete-attendance');
+    const card=event.target.closest('[data-id]');
+    if(!card)return;
+    const id=card.dataset.id;
+    if(deletBtn){
+        if(window.confirm('Delete this student? This cannot be undone.')){
+            deleteStudent(id);
         }
-    })
+    }
+});
+
 fetchRegisteredStudent();
